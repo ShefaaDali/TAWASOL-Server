@@ -8,6 +8,7 @@ try {
     console.log("connect to the DB successfully");
 }catch(err){
 console.error(err)
+process.exit(1);
 }}
 
 module.exports=connectDB;
