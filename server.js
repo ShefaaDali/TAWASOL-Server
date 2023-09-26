@@ -4,8 +4,7 @@ const PORT=process.env.PORT || 4000;
 const app = express();
 app.use(express.json()); //parse the request use json
 app.use("/api/users",require("./routes/users"));
-app.use("/api/auth",require("./routes/auth"));
-app.use("/api/profile",require("./routes/profile"));
+app.use("/api/profiles",require("./routes/profiles"));
 app.use("/api/posts",require("./routes/posts"));
 
 connectDB();
