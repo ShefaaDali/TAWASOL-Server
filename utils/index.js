@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const config= require("config");
-
+const multer =require("multer");
 const auth =(req,res,next)=>{
     const token=req.header("x-auth-token");
     if(!token) return res.status(401).json({masg:"Token is not available, authorization denied."});
@@ -18,4 +18,16 @@ const auth =(req,res,next)=>{
     }
  }
 
- module.exports={auth};
+
+ //create storage 
+ const storage = multer.diskStorage({
+    destination: (req,file,cb)=>{
+        cb(null,"public/images")
+    },
+    filename:(req,file,cb)=>{
+        cb(null,req.user.id)
+    }
+ });
+
+ const upload=multer({storage}).single("");//{storage}=={storage:storage }
+ module.exports={auth,upload};
