@@ -89,7 +89,7 @@ router.delete("/",auth,async(req,res)=>{
 })
 
 //upload image 
-router.post("upload",auth,async(req,res)=>{
+router.post("/upload",auth,async(req,res)=>{
 try{
     upload(req,res,async(err)=>{
         if(err){
@@ -102,5 +102,87 @@ try{
     console.error(err.message);
     return res.status(500).send(err.message);
 }
-})
+});
+
+//add and update experience 
+router.put(
+    "/experience",
+    check("title","Title is required").notEmpty(),
+    check("company","company is required").notEmpty(),
+    check("from","from date is required and needs to be from ppast") //!!! need to add condition for past dates
+    .notEmpty()
+    .custom((value,{req})=>{
+        return req.body.to? value <req.body.to :true;
+    }),auth,
+    async(req,res)=>{
+        const errors =validationResult(req);
+    if(!errors.isEmpty()){
+        return res.status(400).json({errors:errors.array()})
+    }
+    try{
+    const profile = await Profile.findOne({user:req.user.id});
+    profile.experience.unshift(req.body);
+    await profile.save();
+    return res.json(profile);
+    }catch(err){
+    console.log(err.message);
+    res.status(500).send(err.massege);    
+    }
+    });
+ //delete experience 
+ router.delete("/experience/:exp_id",auth,async (req,res)=>{
+    try{
+        const profile =await Profile.findOne({user:req.user.id});
+        profile.experience =profile.experience.filter(exp=>{
+            return exp._id.toString !== req.params.exp_id;
+        });
+        await profile.save();
+        return res.json(profile);
+    }catch(err){
+        console.log(err.massege);
+        res.status(500).send(err.massege);    
+        }
+ });
+
+ //add and update education 
+router.put(
+    "/education",
+    check("school","school is required").notEmpty(),
+    check("degree","degree is required").notEmpty(),
+    check("fieldofstudy","field of study is required").notEmpty(),
+    check("from","from date is required and needs to be from ppast") //!!! need to add condition for past dates
+    .notEmpty()
+    .custom((value,{req})=>{
+        return req.body.to? value <req.body.to :true;
+    }),auth,
+    async(req,res)=>{
+        const errors =validationResult(req);
+    if(!errors.isEmpty()){
+        return res.status(400).json({errors:errors.array()})
+    }
+    try{
+    const profile = await Profile.findOne({user:req.user.id});
+    profile.education.unshift(req.body);
+    console.log(profile.education)
+    await profile.save();
+    return res.json(profile);
+    }catch(err){
+    console.log(err.massege);
+    res.status(500).send(err.massege);    
+    }
+    });
+ //delete education
+ router.delete("/education/:edu_id",auth,async (req,res)=>{
+    try{
+        const profile =await Profile.findOne({user:req.user.id});
+        profile.education =profile.education.filter(edu=>{
+            return edu._id.toString !== req.params.edu_id;
+        });
+        await profile.save();
+        return res.json(profile);
+    }catch(err){
+        console.log(err.massege);
+        res.status(500).send(err.massege);    
+        }
+ });
 module.exports = router;

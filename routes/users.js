@@ -5,7 +5,8 @@ const User=require("../models/User");
 const bcrypt =require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const config= require("config");
-const {auth} =require("../utils/index")
+const {auth} =require("../utils/index");
+const Profile = require("../models/Profile");
 //this API is public
  router.post("/register",//validation
  check("name","Name is reuired").notEmpty(),
@@ -97,5 +98,5 @@ router.get("/",auth,async (req,res)=>{
   } 
 }
 );
-
+ 
  module.exports=router;
