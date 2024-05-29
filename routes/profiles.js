@@ -5,6 +5,7 @@ const { check, validationResult } = require("express-validator");
 const normalize = require("normalize-url");
 const Profile =require("../models/Profile");
 const User =require("../models/User");
+const Post =require("../models/Post");
 
 
 //create and update profile
@@ -74,13 +75,13 @@ router.get("/user/:user_id",auth,async(req,res)=>{
         return res.status(500).send(err.message);
     }
 })
-
+//delete user
 router.delete("/",auth,async(req,res)=>{
     try{
-        await Promise.all(
-            //delet Posts
-            Profile.findByIdAndRemove({user:req.user.id}),
-            User.findByIdAndRemove({_id:req.user.id}))
+        await Promise.all([
+            Post.deleteMany({user:req.user.id}),
+            Profile.findOneAndDelete({user:req.user.id}),
+            User.findByIdAndRemove({_id:req.user.id})])
             res.json({msg:"user information is deleted successfully"})
     }catch(err){
         console.error(err.message);
